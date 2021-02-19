@@ -6,12 +6,14 @@ public class Forfatter {
     private final String fornavn;
     private final String etternavn;
     private Adresse adresse;
+    private int adresseId;
     public int id;
 
-    public Forfatter(int fodt_ar, String fornavn, String etternavn) {
+    public Forfatter(int fodt_ar, String fornavn, String etternavn, int adresseId) {
         this.fodt_ar = fodt_ar;
         this.fornavn = fornavn;
         this.etternavn = etternavn;
+        this.adresseId = adresseId;
     }
 
     public void setAdresse(Adresse adresse) {
@@ -36,6 +38,10 @@ public class Forfatter {
 
     public Adresse getAdresse() {
         return adresse;
+    }
+
+    public int getAdresseId() {
+        return adresseId;
     }
 
     public int getId() {

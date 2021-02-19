@@ -8,12 +8,14 @@ public class Bok {
     private final int utgitt_ar;
     private final String tittel;
     private List<Forfatter> forfattere;
+    private List<Integer> forfatterIds;
     public int id;
 
-    public Bok(int utgitt_ar, String tittel) {
+    public Bok(int utgitt_ar, String tittel, List<Integer> forfatterIds) {
         this.utgitt_ar = utgitt_ar;
         this.tittel = tittel;
         this.forfattere = new ArrayList<>();
+        this.forfatterIds = forfatterIds;
     }
 
     public int getUtgitt_ar() {
@@ -46,5 +48,9 @@ public class Bok {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public List<Integer> getForfatterIds() {
+        return forfatterIds;
     }
 }

@@ -25,12 +25,12 @@ public class RestController {
      * Legg til forfatter, adresse må eksistere først
      *
      * @param forfatter (fodt_ar, fornavn, etternavn)
-     * @param adresseId integer
      * @return forfatter
      */
-    @PostMapping("/leggTilForfatter") //?adresseId=2
-    public Forfatter leggTilForfatter(@RequestBody Forfatter forfatter, @RequestParam("adresseId") int adresseId) {
-        Adresse adr = findAdresse(adresseId);
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/forfatter") //?adresseId=2
+    public Forfatter leggTilForfatter(@RequestBody Forfatter forfatter) {
+        Adresse adr = findAdresse(forfatter.getAdresseId());
         if (adr == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "bad req");
         forfatter.setId(forfatterIdCounter);
         forfatter.setAdresse(adr);
@@ -46,7 +46,8 @@ public class RestController {
      * @param adresse (gateadresse, hus_nr, post_nr, land, by)
      * @return adresse
      */
-    @PostMapping("/leggTilAdresse")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/adresse")
     public Adresse leggTilAdresse(@RequestBody Adresse adresse) {
         adresse.id = adresseIdCounter;
         adresseIdCounter++;
@@ -59,12 +60,12 @@ public class RestController {
      * Legg til bok, forfattere må eksistere først
      *
      * @param bok          Bok(ar, tittel)
-     * @param forfatterIds forfatter id liste
      * @return bok
      */
-    @PostMapping("/leggTilBok") //?forfatterIds=[1,2,3]
-    public Bok leggTilBok(@RequestBody Bok bok, @RequestParam("forfatterIds") List<Integer> forfatterIds) {
-        addForfatters(bok, forfatterIds);
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/bok") //?forfatterIds=[1,2,3]
+    public Bok leggTilBok(@RequestBody Bok bok) {
+        addForfatters(bok, bok.getForfatterIds());
         bok.id = bokIdCounter;
         bokIdCounter++;
         bokList.add(bok);
@@ -72,11 +73,12 @@ public class RestController {
         return bok;
     }
 
-    @PutMapping("/oppdaterForfatter/{id}") //?adresseId=0
-    public Forfatter oppdaterForfatter(@RequestBody Forfatter forfatter, @PathVariable("id") int id, @RequestParam("adresseId") int adrId) {
-        Adresse adr = findAdresse(adrId);
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/forfatter/{id}") //?adresseId=0
+    public Forfatter oppdaterForfatter(@RequestBody Forfatter forfatter, @PathVariable("id") int id) {
+        Adresse adr = findAdresse(forfatter.getAdresseId());
         if (adr == null) {
-            logger.error("adresse not found for forfatter update");
+            logger.error("adresse not found for forfatter PUT request");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         forfatter.setAdresse(adr);
@@ -100,7 +102,8 @@ public class RestController {
         return forfatter;
     }
 
-    @PutMapping("/oppdaterAdresse/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/adresse/{id}")
     public Adresse oppdaterAdresse(@RequestBody Adresse adresse, @PathVariable("id") int id) {
         // update address list
         for (int i = 0; i < adresseList.size(); i++) {
@@ -112,7 +115,7 @@ public class RestController {
         //cascade for all forfatters, which also handles all books
         for (int i = 0; i < forfatterList.size(); i++) {
             if (forfatterList.get(i).getAdresse().id == id) {
-                oppdaterForfatter(forfatterList.get(i), forfatterList.get(i).getId(), id);
+                oppdaterForfatter(forfatterList.get(i), forfatterList.get(i).getId());
                 break; //assuming adresses are unique
             }
         }
@@ -120,9 +123,10 @@ public class RestController {
         return adresse;
     }
 
-    @PutMapping("/oppdaterBok/{id}") //?forfatterIds=1,2,3
-    public Bok oppdaterBok(@RequestBody Bok bok, @PathVariable("id") int id, @RequestParam("forfatterIds") List<Integer> forfatterIds) {
-        addForfatters(bok, forfatterIds);
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/bok/{id}") //?forfatterIds=1,2,3
+    public Bok oppdaterBok(@RequestBody Bok bok, @PathVariable("id") int id) {
+        addForfatters(bok, bok.getForfatterIds());
         bok.setId(id);
         for (int i = 0; i < bokList.size(); i++) {
             if (bokList.get(i).getId() == id) {
@@ -134,7 +138,8 @@ public class RestController {
         return bok;
     }
 
-    @DeleteMapping("/deleteBok/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/bok/{id}")
     public Bok deleteBok(@PathVariable("id") int id) {
         for (int i = 0; i < bokList.size(); i++) {
             if (bokList.get(i).getId() == id) {
@@ -146,7 +151,8 @@ public class RestController {
         return null;
     }
 
-    @DeleteMapping("/deleteForfatter/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/forfatter/{id}")
     public Forfatter deleteForfatter(@PathVariable("id") int id) {
         for (int i = 0; i < bokList.size(); i++) {
             for (int j = 0; j < bokList.get(i).getForfattere().size(); j++) {
@@ -171,7 +177,8 @@ public class RestController {
         return null;
     }
 
-    @DeleteMapping("/deleteAdresse/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/adresse/{id}")
     public Adresse deleteAdresse(@PathVariable("id") int id) {
         //delete forfatter if address is removed, forfatter cannot exist without address
         for (int i = 0; i < forfatterList.size(); i++) {
@@ -190,7 +197,8 @@ public class RestController {
         return null;
     }
 
-    @GetMapping("/getForfattere/{lastname}")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/forfatter/{lastname}")
     public List<Forfatter> getForfattere(@PathVariable("lastname") String lastname) {
         logger.info("A search for forfatters on lastname:{" + lastname + "}is being processed");
         return forfatterList.stream()
@@ -198,7 +206,8 @@ public class RestController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/getBoker/{tittel}")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/bok/{tittel}")
     public Bok getBokerOnTittel(@PathVariable("tittel") String tittel) {
         logger.info("A search for bok on tittel:{" + tittel + "}is being processed");
         for (int i = 0; i < bokList.size(); i++) {
@@ -209,7 +218,8 @@ public class RestController {
         return null;
     }
 
-    @GetMapping("/getBoker/forfatter") //?forfatter=SomeName
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/bok/forfatter") //?forfatter=SomeName
     public List<Bok> getBokerOnForfatter(@RequestParam("forfatter") String lastname) {
         logger.info("A search for bok on forfatter:{" + lastname + "}is being processed");
         List<Bok> res = new ArrayList<>();
@@ -238,19 +248,22 @@ public class RestController {
         }
     }
 
-    @GetMapping("/getForfattere")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/forfatter")
     public List<Forfatter> getForfattere() {
         logger.info("/getForfattere");
         return forfatterList;
     }
 
-    @GetMapping("/getAdresser")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/adresse")
     public List<Adresse> getAdresser() {
         logger.info("/getAdresser");
         return adresseList;
     }
 
-    @GetMapping("/getBoker")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/bok")
     public List<Bok> getBoker() {
         logger.info("/getBoker");
         return bokList;
