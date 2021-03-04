@@ -1,4 +1,4 @@
-package com.simplerest.server;
+package com.simplerest.server.objects;
 
 public class Adresse {
     private final String gateadresse;
