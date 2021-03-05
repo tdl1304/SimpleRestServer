@@ -1,6 +1,7 @@
-package com.simplerest.server.entities;
+package com.simplerest.server.model;
 import javax.persistence.*;
 @Entity
+@Table(name="adresse")
 public class Adresse {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -13,8 +14,7 @@ public class Adresse {
 
     public Adresse() {}
 
-    public Adresse(int id, String gateadresse, int hus_nr, int post_nr, String land, String by) {
-        this.id = id;
+    public Adresse(String gateadresse, int hus_nr, int post_nr, String land, String by) {
         this.gateadresse = gateadresse;
         this.hus_nr = hus_nr;
         this.post_nr = post_nr;

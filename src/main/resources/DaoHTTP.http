@@ -1,0 +1,21 @@
+###
+GET localhost:8080/dao/forfatter
+
+###
+GET localhost:8080/dao/bok
+
+###
+GET localhost:8080/dao/adresse
+
+###
+POST http://localhost:8080/dao/adresse
+Content-Type: application/json
+
+{
+  "gateadresse": "testadresse",
+  "hus_nr": 105,
+  "post_nr": 1050,
+  "land": "testland",
+  "by": "testby"
+}
+

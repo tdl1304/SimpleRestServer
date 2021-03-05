@@ -1,9 +1,10 @@
-package com.simplerest.server.entities;
+package com.simplerest.server.model;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
+@Table(name="forfatter")
 public class Forfatter {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -18,12 +19,9 @@ public class Forfatter {
     @ManyToMany(targetEntity = Bok.class)
     private Set bokSet;
 
-    public Forfatter() {
-        super();
-    }
+    public Forfatter() {}
 
-    public Forfatter(int id, int fodt_ar, String fornavn, String etternavn, Adresse adresse, Set bokSet) {
-        this.id = id;
+    public Forfatter(int fodt_ar, String fornavn, String etternavn, Adresse adresse, Set bokSet) {
         this.fodt_ar = fodt_ar;
         this.fornavn = fornavn;
         this.etternavn = etternavn;

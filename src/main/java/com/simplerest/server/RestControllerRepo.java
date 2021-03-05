@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api")
-public class RestController {
+public class RestControllerRepo {
     List<Forfatter> forfatterList = new ArrayList<>();
     List<Adresse> adresseList = new ArrayList<>();
     List<Bok> bokList = new ArrayList<>();
     static int forfatterIdCounter = 0;
     static int bokIdCounter = 0;
     static int adresseIdCounter = 0;
-    Logger logger = LoggerFactory.getLogger(RestController.class);
+    Logger logger = LoggerFactory.getLogger(RestControllerRepo.class);
 
     /**
      * Legg til forfatter, adresse må eksistere først

@@ -1,9 +1,10 @@
-package com.simplerest.server.entities;
+package com.simplerest.server.model;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
+@Table(name="bok")
 public class Bok {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -16,8 +17,7 @@ public class Bok {
 
     public Bok() {}
 
-    public Bok(int id, int utgitt_ar, String tittel, Set forfatterSet) {
-        this.id = id;
+    public Bok(int utgitt_ar, String tittel, Set forfatterSet) {
         this.utgitt_ar = utgitt_ar;
         this.tittel = tittel;
         this.forfatterSet = forfatterSet;
