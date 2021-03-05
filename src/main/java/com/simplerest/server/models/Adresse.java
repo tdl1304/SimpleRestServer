@@ -1,10 +1,19 @@
-package com.simplerest.server.model;
+package com.simplerest.server.models;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 @Entity
 @Table(name="adresse")
 public class Adresse {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(
+            strategy= GenerationType.AUTO,
+            generator="native"
+    )
+    @GenericGenerator(
+            name = "native",
+            strategy = "native"
+    )
     private int id;
     private String gateadresse;
     private int hus_nr;

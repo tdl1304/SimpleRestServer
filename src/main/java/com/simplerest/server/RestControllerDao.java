@@ -1,6 +1,6 @@
 package com.simplerest.server;
 
-import com.simplerest.server.model.*;
+import com.simplerest.server.models.*;
 import com.simplerest.server.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/dao")
@@ -83,20 +82,20 @@ public class RestControllerDao {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/bok/{id}")
-    public Bok deleteBok(@PathVariable("id") int id) {
-        return bokService.deleteById(id);
+    public void deleteBok(@PathVariable("id") int id) {
+        bokService.deleteById(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/forfatter/{id}")
-    public Forfatter deleteForfatter(@PathVariable("id") int id) {
-        return forfatterService.deleteById(id);
+    public void deleteForfatter(@PathVariable("id") int id) {
+        forfatterService.deleteById(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/adresse/{id}")
-    public Adresse deleteAdresse(@PathVariable("id") int id) {
-        return adresseService.deleteById(id);
+    public void deleteAdresse(@PathVariable("id") int id) {
+        adresseService.deleteById(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -115,12 +114,12 @@ public class RestControllerDao {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/bok/forfatter/{forfatter_lastname}")
-    public List<Set<Bok>> getBokerOnForfatter(@PathVariable("forfatter_lastname") String lastname) {
+    public List<List<Bok>> getBokerOnForfatter(@PathVariable("forfatter_lastname") String lastname) {
         List<Forfatter> forfattersFound = forfatterService.findByLastname(lastname);
-        List<Set<Bok>> results = new ArrayList<>();
+        List<List<Bok>> results = new ArrayList<>();
         for (Forfatter f : forfattersFound
         ) {
-            results.add(f.getBokSet());
+            results.add(f.getBokList());
         }
         return results;
     }

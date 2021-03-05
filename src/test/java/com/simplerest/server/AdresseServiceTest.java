@@ -1,9 +1,11 @@
 package com.simplerest.server;
 
-import com.simplerest.server.dao.AdresseDao;
-import com.simplerest.server.model.Adresse;
+import com.simplerest.server.dao.AdresseRepository;
+import com.simplerest.server.models.Adresse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +25,7 @@ public class AdresseServiceTest {
     AdresseService adresseService;
 
     @MockBean
-    AdresseDao adresseDao;
+    AdresseRepository adresseRepository;
 
     String gateadresse = "testgate";
     int hus_nr = 101;
@@ -33,7 +35,7 @@ public class AdresseServiceTest {
 
     @Test
     public void getAll() {
-        when(adresseDao.loadAll())
+        when(adresseRepository.findAll())
                 .thenReturn(Stream.of(new Adresse(gateadresse, hus_nr, post_nr, land, by), new Adresse(gateadresse,hus_nr,post_nr,land,by))
                         .collect(Collectors.toList()));
         List<Adresse> adresseList = adresseService.getAll();
@@ -43,8 +45,8 @@ public class AdresseServiceTest {
     @Test
     public void findById() {
         int id = 0;
-        when(adresseDao.load(id))
-                .thenReturn(new Adresse(gateadresse, hus_nr, post_nr, land, by));
+        when(adresseRepository.findById(id))
+                .thenReturn(java.util.Optional.of(new Adresse(gateadresse, hus_nr, post_nr, land, by)));
         Adresse found = adresseService.findById(id);
         assert found.getId() == id : "Not found";
 
@@ -53,7 +55,7 @@ public class AdresseServiceTest {
     @Test
     public void save() {
         Adresse adresse = new Adresse(gateadresse, hus_nr, post_nr, land, by);
-        when(adresseDao.save(adresse))
+        when(adresseRepository.save(adresse))
                 .thenReturn(adresse);
         Adresse saved = adresseService.save(adresse);
         assert saved.getId() == adresse.getId() : "Unable to save to db";
@@ -62,17 +64,14 @@ public class AdresseServiceTest {
     @Test
     public void deleteById() {
         int id = 0;
-        when(adresseDao.delete(id))
-                .thenReturn(new Adresse(gateadresse, hus_nr, post_nr, land, by));
-        Adresse deleted = adresseService.deleteById(id);
-        assert deleted.getId() == id : "Unable to delete";
-
+        doNothing().when(adresseRepository).deleteById(id);
+        adresseService.deleteById(id);
     }
 
     @Test
     public void update() {
         Adresse adresse = new Adresse(gateadresse, hus_nr, post_nr, land, by);
-        when(adresseDao.update(adresse))
+        when(adresseRepository.save(adresse))
                 .thenReturn(adresse);
         Adresse updated = adresseService.update(adresse);
         assert updated.equals(adresse) : "Unable to update";

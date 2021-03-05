@@ -1,13 +1,23 @@
-package com.simplerest.server.model;
+package com.simplerest.server.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name="forfatter")
 public class Forfatter {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(
+            strategy= GenerationType.AUTO,
+            generator="native"
+    )
+    @GenericGenerator(
+            name = "native",
+            strategy = "native"
+    )
     public int id;
     private int fodt_ar;
     private String fornavn;
@@ -17,16 +27,17 @@ public class Forfatter {
     private Adresse adresse;
 
     @ManyToMany(targetEntity = Bok.class)
-    private Set bokSet;
+    @JsonIgnoreProperties(value="forfatter")
+    private List<Bok> bok;
 
     public Forfatter() {}
 
-    public Forfatter(int fodt_ar, String fornavn, String etternavn, Adresse adresse, Set bokSet) {
+    public Forfatter(int fodt_ar, String fornavn, String etternavn, Adresse adresse, List<Bok> bokList) {
         this.fodt_ar = fodt_ar;
         this.fornavn = fornavn;
         this.etternavn = etternavn;
         this.adresse = adresse;
-        this.bokSet = bokSet;
+        this.bok= bokList;
     }
 
     public int getId() {
@@ -57,11 +68,11 @@ public class Forfatter {
         return etternavn;
     }
 
-    public Set getBokSet() {
-        return bokSet;
+    public List<Bok> getBokList() {
+        return bok;
     }
 
-    public void setBokSet(Set bokSet) {
-        this.bokSet = bokSet;
+    public void setBokList(List<Bok> bokList) {
+        this.bok= bokList;
     }
 }

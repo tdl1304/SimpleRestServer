@@ -1,23 +1,20 @@
 package com.simplerest.server.services;
-import com.simplerest.server.dao.ForfatterDao;
-import com.simplerest.server.model.Adresse;
-import com.simplerest.server.model.Bok;
-import com.simplerest.server.model.Forfatter;
+import com.simplerest.server.dao.ForfatterRepository;
+import com.simplerest.server.models.Adresse;
+import com.simplerest.server.models.Bok;
+import com.simplerest.server.models.Forfatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class ForfatterService implements ServiceLayer<Forfatter>{
     Logger logger = LoggerFactory.getLogger(ForfatterService.class);
     @Autowired
-    private ForfatterDao forfatterDao;
+    private ForfatterRepository forfatterRepository;
     @Autowired
     private AdresseService adresseService;
     @Autowired
@@ -29,13 +26,16 @@ public class ForfatterService implements ServiceLayer<Forfatter>{
     @Override
     public List<Forfatter> getAll() {
         logger.info("Getting all forfattere");
-        return forfatterDao.loadAll();
+        List<Forfatter> result = new ArrayList<>();
+        forfatterRepository.findAll().forEach(result::add);
+        return result;
     }
 
     @Override
     public Forfatter findById(int theId) {
         logger.info("Finding forfatter: "+theId);
-        return forfatterDao.load(theId);
+        Optional<Forfatter> found = forfatterRepository.findById(theId);
+        return found.orElse(null);
     }
 
     /**
@@ -44,19 +44,17 @@ public class ForfatterService implements ServiceLayer<Forfatter>{
      * @return List of forfatters
      */
     public List<Forfatter> findByLastname(String lastname) {
-        return forfatterDao.loadAll().stream()
-                .filter(x->x.getEtternavn().equals(lastname))
-                .collect(Collectors.toList());
+        return forfatterRepository.findAllByEtternavn(lastname);
     }
 
     @Override
     public Forfatter save(Forfatter entity) {
-        return forfatterDao.save(entity);
+        return forfatterRepository.save(entity);
     }
 
     public Forfatter save(Forfatter entity, int adresseId, List<Integer> bokIds) {
         Adresse adresseFound = adresseService.findById(adresseId);
-        Set<Bok> bokSet = new HashSet<>();
+        List<Bok> bokList = new ArrayList<>();
         if(adresseFound != null) {
             entity.setAdresse(adresseFound);
         }
@@ -64,25 +62,25 @@ public class ForfatterService implements ServiceLayer<Forfatter>{
             for (int id: bokIds) {
                 Bok b = bokService.findById(id);
                 if(b != null) {
-                    bokSet.add(b);
+                    bokList.add(b);
                 }
             }
         }
-        entity.setBokSet(bokSet);
+        entity.setBokList(bokList);
         entity.setAdresse(adresseFound);
-        return forfatterDao.save(entity);
+        return forfatterRepository.save(entity);
     }
 
     @Override
-    public Forfatter deleteById(int theId) {
+    public void deleteById(int theId) {
         logger.info("deleting forfatter: "+theId);
-        return forfatterDao.delete(theId);
+        forfatterRepository.deleteById(theId);
     }
 
     @Override
     public Forfatter update(Forfatter forfatter) {
         logger.info("updating forfatter: "+forfatter);
-        return forfatterDao.update(forfatter);
+        return forfatterRepository.save(forfatter);
 
     }
 }

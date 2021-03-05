@@ -1,13 +1,4 @@
-###
-GET localhost:8080/dao/forfatter
-
-###
-GET localhost:8080/dao/bok
-
-###
-GET localhost:8080/dao/adresse
-
-###
+### Posters
 POST http://localhost:8080/dao/adresse
 Content-Type: application/json
 
@@ -18,4 +9,94 @@ Content-Type: application/json
   "land": "testland",
   "by": "testby"
 }
+
+###
+POST localhost:8080/dao/forfatter
+Content-Type: application/json
+
+{
+  "fodt_ar": 1990,
+  "fornavn": "testfornavn",
+  "etternavn": "testetternavn",
+  "adresse": {"id": 1},
+  "bokList": []
+}
+
+###
+POST localhost:8080/dao/bok
+Content-Type: application/json
+
+{
+  "utgitt_ar": 1995,
+  "tittel": "testtittel",
+  "forfatterList": [{"id": 1}]
+}
+
+### Update Circular dependecies
+PUT localhost:8080/dao/forfatter
+Content-Type: application/json
+
+{
+  "id": 1,
+  "fodt_ar": 1990,
+  "fornavn": "testfornavn",
+  "etternavn": "testetternavn",
+  "adresse": {"id": 1},
+  "bokList": [{"id": 1}]
+}
+
+### Update NON Circular dependecies
+PUT localhost:8080/dao/forfatter
+Content-Type: application/json
+
+{
+  "id": 1,
+  "fodt_ar": 1990,
+  "fornavn": "testfornavn2",
+  "etternavn": "testetternavn",
+  "adresse": {"id": 1},
+  "bokList": []
+}
+
+### Update NON Circular dependecies
+PUT localhost:8080/dao/adresse
+Content-Type: application/json
+
+{
+  "id": 1,
+  "gateadresse": "testadresse2",
+  "hus_nr": 105,
+  "post_nr": 1050,
+  "land": "testland",
+  "by": "testby"
+}
+
+
+### Getters
+GET localhost:8080/dao/forfatter
+
+###
+GET localhost:8080/dao/bok
+
+###
+GET localhost:8080/dao/adresse
+
+### change last path to search after lastname
+GET localhost:8080/dao/forfatter/testetternavn
+
+###
+GET localhost:8080/dao/bok/forfatter/testetternavn
+
+### Deleters
+DELETE localhost:8080/dao/forfatter/1
+
+###
+DELETE localhost:8080/dao/adresse/1
+
+###
+DELETE localhost:8080/dao/bok/1
+
+
+
+
 
